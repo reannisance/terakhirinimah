@@ -15,11 +15,13 @@ tahun_pajak = st.number_input("📅 Pilih Tahun Pajak", min_value=2000, max_valu
 def normalisasi_kolom(df):
     kolom_alias = {
         'tmt': 'TMT', 't.m.t': 'TMT', 'tgl mulai': 'TMT',
-        'nama wp': 'Nama Op', 'nama op': 'Nama Op',
+        'nama OP': 'Nama Op', 'nama op': 'Nama Op',
         'nm unit': 'Nm Unit', 'unit': 'Nm Unit',
         'kategori': 'KLASIFIKASI', 'klasifikasi': 'KLASIFIKASI',
         'klasifikasi hiburan': 'KLASIFIKASI', 'jenis': 'KLASIFIKASI',
-        'status': 'STATUS'
+        'status': 'STATUS', 'Status': 'STATUS',
+        'nama wp':'Nama WP','nama WP': 'Nama WP', 'Nama WP': 'Nama WP', 'WP': 'Nama WP', 
+        'Wajib Pajak': 'Nama WP', 'wajib pajak': 'Nama WP',
     }
     df.columns = [str(col).strip().lower().replace('.', '').replace('_', ' ') for col in df.columns]
     df.columns = [kolom_alias.get(col, col) for col in df.columns]
