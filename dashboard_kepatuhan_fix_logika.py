@@ -151,21 +151,24 @@ if uploaded_file:
         st.plotly_chart(fig_pie, use_container_width=True)
 
         st.subheader("📈 Tren Pembayaran Pajak per Bulan")
-        import calendar
         if payment_cols:
-            bulanan = df_output[payment_cols].sum().reset_index()
-            bulanan.columns = ["Bulan", "Total Pembayaran"]
+            # Pastikan kolom tanggal sebagai datetime
+            df_output["Tanggal"] = pd.to_datetime(df_output["Tanggal"])
             
-            # Ubah ke datetime dan urutkan
-            bulanan["Bulan"] = pd.to_datetime(bulanan["Bulan"]).dt.to_period("M").dt.to_timestamp()
-            bulanan = bulanan.sort_values("Bulan")
+            # Buat kolom 'Bulan' dari tanggal
+            df_output["Bulan"] = df_output["Tanggal"].dt.to_period("M").dt.to_timestamp()
+            
+            # Group by bulan dan total pembayaran
+            bulanan = df_output.groupby("Bulan")[payment_cols].sum().reset_index()
+            
+            # Label untuk sumbu-X
+            import calendar
+            bulanan["Label"] = bulanan["Bulan"].dt.month
+            bulanan["Label"] = bulanan["Label"].apply(lambda x: calendar.month_abbr[x])  # Jan, Feb, dst
         
-            # Buat label bulan-tahun agar unik
-            bulanan["Label"] = bulanan["Bulan"].dt.strftime("%b %Y")  # contoh: Jan 2024, Feb 2024
-        
-            # Plot dengan Plotly
+            # Grafik
             fig_line = px.line(
-                bulanan, x="Label", y="Total Pembayaran",
+                bulanan, x="Label", y=payment_cols[0],  # ganti dengan nama kolomnya
                 title="Total Pembayaran Pajak Jan–Des", markers=True,
                 line_shape="spline", color_discrete_sequence=["#FFB6C1"]
             )
