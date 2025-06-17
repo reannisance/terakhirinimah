@@ -151,19 +151,25 @@ if uploaded_file:
         st.plotly_chart(fig_pie, use_container_width=True)
 
         st.subheader("📈 Tren Pembayaran Pajak per Bulan")
+        import calendar
         if payment_cols:
             bulanan = df_output[payment_cols].sum().reset_index()
             bulanan.columns = ["Bulan", "Total Pembayaran"]
+            
+            # Ubah ke datetime dan urutkan
             bulanan["Bulan"] = pd.to_datetime(bulanan["Bulan"]).dt.to_period("M").dt.to_timestamp()
             bulanan = bulanan.sort_values("Bulan")
-            bulanan["Label"] = bulanan["Bulan"].dt.strftime("%b")  # Misal Jan, Feb, ...
+        
+            # Buat label bulan-tahun agar unik
+            bulanan["Label"] = bulanan["Bulan"].dt.strftime("%b %Y")  # contoh: Jan 2024, Feb 2024
+        
+            # Plot dengan Plotly
             fig_line = px.line(
                 bulanan, x="Label", y="Total Pembayaran",
                 title="Total Pembayaran Pajak Jan–Des", markers=True,
                 line_shape="spline", color_discrete_sequence=["#FFB6C1"]
             )
             st.plotly_chart(fig_line, use_container_width=True)
-
 
         st.subheader("🏅 Top 5 Objek Pajak Berdasarkan Total Pembayaran")
         top_wp_detail = (
