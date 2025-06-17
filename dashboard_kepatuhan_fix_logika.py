@@ -117,12 +117,6 @@ if uploaded_file:
 
         st.success("✅ Data berhasil diproses dan difilter!")
 
-        # Debug dan hapus kolom duplikat
-        payment_cols = [col for col in df_output.columns if isinstance(col, datetime) and col.year == tahun_pajak]
-        st.write("🧾 Kolom Pembayaran Terbaca:", payment_cols)
-        df_output = df_output.loc[:, ~df_output.columns.duplicated()]
-                    st.dataframe(df_output.head(30), use_container_width=True)
-
         output = BytesIO()
         df_output.to_excel(output, index=False)
         st.download_button("⬇️ Download Hasil Excel", data=output.getvalue(), file_name="hasil_dashboard.xlsx")
