@@ -152,14 +152,26 @@ if uploaded_file:
 
         st.subheader("📈 Tren Pembayaran Pajak per Bulan")
         if payment_cols:
+            # Filter hanya untuk bulan Januari hingga Desember tahun yang dipilih
             bulanan = df_output[payment_cols].sum().reset_index()
             bulanan.columns = ["Bulan", "Total Pembayaran"]
+            
+            # Pastikan kolom bulan diubah menjadi datetime dan hanya ambil bulan dari tahun yang dipilih
             bulanan["Bulan"] = pd.to_datetime(bulanan["Bulan"], errors="coerce")
+            bulanan = bulanan[bulanan["Bulan"].dt.year == tahun_pajak]
+            
+            # Sort berdasarkan bulan
             bulanan = bulanan.sort_values("Bulan")
-            fig_line = px.line(bulanan, x="Bulan", y="Total Pembayaran", title="Total Pembayaran Pajak per Bulan", markers=True)
-            st.plotly_chart(fig_line, use_container_width=True)
+            
+            # Jika tidak ada data untuk tahun tersebut, tampilkan pesan
+            if bulanan.empty:
+                st.warning(f"📭 Tidak ada data pembayaran untuk tahun {tahun_pajak}.")
+            else:
+                fig_line = px.line(bulanan, x="Bulan", y="Total Pembayaran", title="Total Pembayaran Pajak per Bulan", markers=True)
+                st.plotly_chart(fig_line, use_container_width=True)
         else:
             st.warning("📭 Tidak ditemukan kolom pembayaran murni yang valid.")
+
 
         st.subheader("🏅 Top 5 Objek Pajak Berdasarkan Total Pembayaran")
         top_wp_detail = (
