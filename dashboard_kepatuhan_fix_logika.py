@@ -157,7 +157,7 @@ if uploaded_file:
             bulanan.columns = ["Bulan", "Total Pembayaran"]
             
             # Mengonversi kolom bulan menjadi datetime
-            bulanan["Bulan"] = pd.to_datetime(bulanan["Bulan"].astype(str), format='%Y-%m-%d', errors='coerce')
+            bulanan["Bulan"] = pd.to_datetime(bulanan["Bulan"], errors="coerce")
             
             # Filter untuk tahun yang dipilih
             bulanan = bulanan[bulanan["Bulan"].dt.year == tahun_pajak]
@@ -170,21 +170,20 @@ if uploaded_file:
                 bulanan["Bulan"] = bulanan["Bulan"].dt.strftime('%b %Y')
                 
                 # Menghitung total pembayaran per bulan
-                bulanan_grouped = df_output.groupby(df_output["TMT"].dt.to_period("M")).sum().reset_index()
+                bulanan_grouped = df_output[payment_cols].sum().reset_index()
+                bulanan_grouped.columns = ["Bulan", "Total Pembayaran"]
                 
-                # Mengonversi kembali ke format datetime untuk plotting
-                bulanan_grouped["Bulan"] = bulanan_grouped["TMT"].dt.to_timestamp()
+                # Mengonversi kolom bulan menjadi datetime
+                bulanan_grouped["Bulan"] = pd.to_datetime(bulanan_grouped["Bulan"], errors="coerce")
                 
                 # Sort berdasarkan bulan
                 bulanan_grouped = bulanan_grouped.sort_values("Bulan")
-                
-                # Pastikan kita hanya mengambil kolom yang relevan
-                bulanan_grouped = bulanan_grouped[["Bulan", "Total Pembayaran"]]
                 
                 fig_line = px.line(bulanan_grouped, x="Bulan", y="Total Pembayaran", title="Total Pembayaran Pajak per Bulan", markers=True)
                 st.plotly_chart(fig_line, use_container_width=True)
         else:
             st.warning("📭 Tidak ditemukan kolom pembayaran murni yang valid.")
+
 
         st.write("Data Bulanan:", bulanan)
         st.write("Data Bulanan Grouped:", bulanan_grouped)
