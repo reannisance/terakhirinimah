@@ -7,6 +7,21 @@ import plotly.express as px
 
 st.set_page_config(page_title="🎨 Dashboard Kepatuhan Pajak Daerah", layout="wide")
 st.title("🎯 Dashboard Kepatuhan Pajak Daerah")
+with st.expander("📌 Panduan Penggunaan Dashboard", expanded=False):
+    st.markdown("""
+    **Format Excel yang Didukung:**
+    - Kolom wajib: `Nama OP`, `TMT`, `STATUS`, `Nm Unit`
+    - Untuk pajak *HIBURAN*, wajib ada kolom `KLASIFIKASI` / `Jenis Hiburan`
+    - Kolom pembayaran bulan bisa dalam format `Jan-24`, `01/2024`, atau `2024-01-01`
+
+    **Langkah-langkah:**
+    1. Upload file Excel sesuai format.
+    2. Pilih sheet & tahun pajak.
+    3. Gunakan filter UPPPD / Klasifikasi / Status jika diperlukan.
+    4. Lihat grafik & download hasilnya.
+
+    ⚠️ Jika ada error, periksa apakah kolom sudah sesuai.
+    """)
 st.markdown("Upload file Excel, pilih sheet, filter, dan lihat visualisasinya ✨")
 
 uploaded_file = st.file_uploader("📁 Upload File Excel", type=["xlsx"])
