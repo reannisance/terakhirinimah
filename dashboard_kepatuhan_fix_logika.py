@@ -170,20 +170,24 @@ if uploaded_file:
                 bulanan["Bulan"] = bulanan["Bulan"].dt.strftime('%b %Y')
                 
                 # Menghitung total pembayaran per bulan
-                bulanan_grouped = df_output.groupby(bulanan["Bulan"]).sum().reset_index()
+                bulanan_grouped = df_output.groupby(df_output["TMT"].dt.to_period("M")).sum().reset_index()
                 
-                # Pastikan kolom bulan diubah menjadi datetime untuk plotting
-                bulanan_grouped["Bulan"] = pd.to_datetime(bulanan_grouped["Bulan"], format='%b %Y')
+                # Mengonversi kembali ke format datetime untuk plotting
+                bulanan_grouped["Bulan"] = bulanan_grouped["TMT"].dt.to_timestamp()
                 
                 # Sort berdasarkan bulan
                 bulanan_grouped = bulanan_grouped.sort_values("Bulan")
+                
+                # Pastikan kita hanya mengambil kolom yang relevan
+                bulanan_grouped = bulanan_grouped[["Bulan", "Total Pembayaran"]]
                 
                 fig_line = px.line(bulanan_grouped, x="Bulan", y="Total Pembayaran", title="Total Pembayaran Pajak per Bulan", markers=True)
                 st.plotly_chart(fig_line, use_container_width=True)
         else:
             st.warning("📭 Tidak ditemukan kolom pembayaran murni yang valid.")
 
-
+        st.write("Data Bulanan:", bulanan)
+        st.write("Data Bulanan Grouped:", bulanan_grouped)
 
         st.subheader("🏅 Top 5 Objek Pajak Berdasarkan Total Pembayaran")
         top_wp_detail = (
