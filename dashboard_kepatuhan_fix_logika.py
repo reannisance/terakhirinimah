@@ -118,6 +118,11 @@ if uploaded_file:
                 df_output = df_output[df_output["STATUS"] == selected_status]
 
         st.success("✅ Data berhasil diproses dan difilter!")
+        
+        # Hapus kolom duplikat agar tidak error saat menampilkan tabel atau download
+        df_output = df_output.loc[:, ~df_output.columns.duplicated()]
+
+        st.dataframe(df_output.head(30), use_container_width=True)
 
         output = BytesIO()
         df_output.to_excel(output, index=False)
