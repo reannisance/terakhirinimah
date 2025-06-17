@@ -161,7 +161,7 @@ if uploaded_file:
                                line_shape="spline", color_discrete_sequence=["#FFB6C1"])
             st.plotly_chart(fig_line, use_container_width=True)
 
-        st.subheader("🏅 Top 5 Objek Pajak Berdasarkan Total Pembayaran (Tabel Lengkap)")
+        st.subheader("🏅 Top 5 Objek Pajak Berdasarkan Total Pembayaran")
         top_wp_detail = (
             df_output[["Nama Op", "Total Pembayaran", "Nm Unit", "KLASIFIKASI"]]
             .groupby(["Nama Op", "Nm Unit", "KLASIFIKASI"], as_index=False)
