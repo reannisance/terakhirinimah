@@ -154,12 +154,16 @@ if uploaded_file:
         if payment_cols:
             bulanan = df_output[payment_cols].sum().reset_index()
             bulanan.columns = ["Bulan", "Total Pembayaran"]
-            bulanan["Bulan"] = pd.to_datetime(bulanan["Bulan"])
+            bulanan["Bulan"] = pd.to_datetime(bulanan["Bulan"]).dt.to_period("M").dt.to_timestamp()
             bulanan = bulanan.sort_values("Bulan")
-            fig_line = px.line(bulanan, x="Bulan", y="Total Pembayaran",
-                               title="Total Pembayaran Pajak per Bulan", markers=True,
-                               line_shape="spline", color_discrete_sequence=["#FFB6C1"])
+            bulanan["Label"] = bulanan["Bulan"].dt.strftime("%b")  # Misal Jan, Feb, ...
+            fig_line = px.line(
+                bulanan, x="Label", y="Total Pembayaran",
+                title="Total Pembayaran Pajak Jan–Des", markers=True,
+                line_shape="spline", color_discrete_sequence=["#FFB6C1"]
+            )
             st.plotly_chart(fig_line, use_container_width=True)
+
 
         st.subheader("🏅 Top 5 Objek Pajak Berdasarkan Total Pembayaran")
         top_wp_detail = (
