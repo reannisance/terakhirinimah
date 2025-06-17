@@ -152,27 +152,14 @@ if uploaded_file:
 
         st.subheader("📈 Tren Pembayaran Pajak per Bulan")
         if payment_cols:
-            # Pastikan kolom tanggal sebagai datetime
-            df_output["Tanggal"] = pd.to_datetime(df_output["Tanggal"])
-            
-            # Buat kolom 'Bulan' dari tanggal
-            df_output["Bulan"] = df_output["Tanggal"].dt.to_period("M").dt.to_timestamp()
-            
-            # Group by bulan dan total pembayaran
-            bulanan = df_output.groupby("Bulan")[payment_cols].sum().reset_index()
-            
-            # Label untuk sumbu-X
-            import calendar
-            bulanan["Label"] = bulanan["Bulan"].dt.month
-            bulanan["Label"] = bulanan["Label"].apply(lambda x: calendar.month_abbr[x])  # Jan, Feb, dst
-        
-            # Grafik
-            fig_line = px.line(
-                bulanan, x="Label", y=payment_cols[0],  # ganti dengan nama kolomnya
-                title="Total Pembayaran Pajak Jan–Des", markers=True,
-                line_shape="spline", color_discrete_sequence=["#FFB6C1"]
-            )
+            bulanan = df_output[payment_cols].sum().reset_index()
+            bulanan.columns = ["Bulan", "Total Pembayaran"]
+            bulanan["Bulan"] = pd.to_datetime(bulanan["Bulan"], errors="coerce")
+            bulanan = bulanan.sort_values("Bulan")
+            fig_line = px.line(bulanan, x="Bulan", y="Total Pembayaran", title="Total Pembayaran Pajak per Bulan", markers=True)
             st.plotly_chart(fig_line, use_container_width=True)
+        else:
+            st.warning("📭 Tidak ditemukan kolom pembayaran murni yang valid.")
 
         st.subheader("🏅 Top 5 Objek Pajak Berdasarkan Total Pembayaran")
         top_wp_detail = (
