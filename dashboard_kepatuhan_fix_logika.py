@@ -152,37 +152,24 @@ if uploaded_file:
 
         st.subheader("📈 Tren Pembayaran Pajak per Bulan")
         if payment_cols:
-            # Menghitung total pembayaran per bulan
             bulanan = df_output[payment_cols].sum().reset_index()
             bulanan.columns = ["Bulan", "Total Pembayaran"]
-            
-            # Mengonversi kolom bulan menjadi datetime
             bulanan["Bulan"] = pd.to_datetime(bulanan["Bulan"], errors="coerce")
-            
-            # Filter untuk tahun yang dipilih
             bulanan = bulanan[bulanan["Bulan"].dt.year == tahun_pajak]
-            
-            # Jika tidak ada data untuk tahun tersebut, tampilkan pesan
+        
             if bulanan.empty:
                 st.warning(f"📭 Tidak ada data pembayaran untuk tahun {tahun_pajak}.")
             else:
-                # Mengatur format bulan untuk ditampilkan
-                bulanan["Bulan"] = bulanan["Bulan"].dt.strftime('%b %Y')
-                
-                # Menghitung total pembayaran per bulan
-                bulanan_grouped = df_output[payment_cols].sum().reset_index()
-                bulanan_grouped.columns = ["Bulan", "Total Pembayaran"]
-                
-                # Mengonversi kolom bulan menjadi datetime
-                bulanan_grouped["Bulan"] = pd.to_datetime(bulanan_grouped["Bulan"], errors="coerce")
-                
-                # Sort berdasarkan bulan
-                bulanan_grouped = bulanan_grouped.sort_values("Bulan")
-                
-                fig_line = px.line(bulanan_grouped, x="Bulan", y="Total Pembayaran", title="Total Pembayaran Pajak per Bulan", markers=True)
+                bulanan = bulanan.sort_values("Bulan")
+                fig_line = px.line(
+                    bulanan,
+                    x="Bulan",
+                    y="Total Pembayaran",
+                    title="Total Pembayaran Pajak per Bulan",
+                    markers=True
+                )
+                fig_line.update_layout(xaxis_tickformat="%b %Y")  # <-- Gunakan ini untuk label bulan
                 st.plotly_chart(fig_line, use_container_width=True)
-        else:
-            st.warning("📭 Tidak ditemukan kolom pembayaran murni yang valid.")
 
 
         st.write("Data Bulanan:", bulanan)
